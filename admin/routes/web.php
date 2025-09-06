@@ -40,7 +40,7 @@ Route::middleware(['auth'])->group(function () {
     Route::post('/tamu-umum/store', [TamuUmumController::class, 'store'])->name('tamu_umum.store');
     Route::put('/tamu-umum/{tamu_umum}', [TamuUmumController::class, 'update'])->name('tamu_umum.update');
     Route::get('/tamu-umum/{tamu_umum}/edit', [TamuUmumController::class, 'edit'])->name('tamu_umum.edit');
-    Route::delete('/tamu-umum/{tamuUmum}', [TamuUmumController::class, 'destroy'])->name('tamu_umum.destroy');
+    Route::delete('/tamu-umum/{tamu_umum}', [TamuUmumController::class, 'destroy'])->name('tamu_umum.destroy');
     Route::get('/tamu-umum/export/excel', [TamuUmumController::class, 'export'])->name('tamu_umum.export.excel');
 
     // Orang Tua routes
