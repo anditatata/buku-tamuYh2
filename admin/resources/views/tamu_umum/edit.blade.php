@@ -114,8 +114,7 @@
                         <input type="date" 
                                name="tanggal_kunjungan" 
                                value="{{ old('tanggal_kunjungan', $tamu_umum->tanggal_kunjungan) }}"
-                               class="w-full px-4 py-3 border border-gray-300 rounded-md"
-                               required>
+                               class="w-full px-4 py-3 border border-gray-300 rounded-md">
                     </div>
 
                     <!-- Foto -->
