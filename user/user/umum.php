@@ -1,22 +1,62 @@
+<?php
+// Jalankan hanya saat form disubmit
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    // Koneksi DB
+    $conn = new mysqli("localhost", "root", "", "db_bukutamu");
+    if ($conn->connect_error) {
+        die("Koneksi gagal: " . $conn->connect_error);
+    }
+
+    // Ambil data dari form
+    $nama      = $_POST['nama'] ?? '';
+    $identitas = $_POST['identitas'] ?? '';
+    $keperluan = $_POST['keperluan'] ?? '';
+    $kontak    = $_POST['kontak'] ?? '';
+    $guru      = $_POST['guru'] ?? '';
+    $waktu     = $_POST['waktu'] ?? '';
+    $tanggal   = $_POST['tanggal'] ?? '';
+    $foto_data = $_POST['foto_data'] ?? '';
+
+    // Simpan foto base64 (jika ada)
+    $foto_path = null;
+    if (!empty($foto_data)) {
+        $img = str_replace('data:image/png;base64,', '', $foto_data);
+        $img = str_replace(' ', '+', $img);
+        $imgData = base64_decode($img);
+
+        $foto_path = "/admin/storage/app/public/tamu_umum/" . uniqid() . ".png";
+        if (!is_dir("uploads")) mkdir("uploads");
+        file_put_contents($foto_path, $imgData);
+    }
+
+    // Insert ke tamu_umum
+    $sql_umum = "INSERT INTO tamu_umum (nama, identitas, keperluan, guru_dituju, kontak, waktu_kunjungan, tanggal_kunjungan, foto, created_at, updated_at)
+                 VALUES ('$nama', '$identitas', '$keperluan', '$guru', '$kontak', '$waktu', '$tanggal', '$foto_path', NOW(), NOW())";
+    $conn->query($sql_umum);
+
+    $conn->close();
+
+    echo "<script>alert('Data berhasil disimpan ke semua tabel!'); window.location.href='umum.php';</script>";
+}
+?>
+
 <!DOCTYPE html>
 <html lang="id">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Buku Tamu Instansi</title>
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="stylesheet" href="css/styles.css">
+  <link rel="stylesheet" href="css/styles.css">
 </head>
 <body>
-  <!-- Back Button -->
-  <a href="dashboard.html" class="back-btn">
+    <!-- Back Button -->
+  <a href="index.html" class="back-btn">
     <i class="fas fa-arrow-left"></i>
     Kembali ke Halaman Utama
   </a>
 
-  <!-- Header -->
-<header>
+  <header>
     <h1><i class="fas fa-building animate-pulse"></i> BUKU TAMU ORANG TUA SISWA/I<br>SMKN 13 BANDUNG</h1>
     <div class="social-icons">
       <a href="https://www.facebook.com/share/1FhqvT1T2P/"><i class="fab fa-facebook"></i></a>
@@ -25,115 +65,49 @@
       <a href="https://www.instagram.com/smkn13bandung?igsh=MTY3aGh3NDF0eno1dQ=="><i class="fab fa-instagram"></i></a>
     </div>
   </header>
-
-  <!-- Form Container -->
-  <div class="container">
-    <h2><i class="fas fa-clipboard-list"></i> FORM KUNJUNGAN ORANG TUA SISWA/I</h2>
+  <!-- Form kamu tetap sama, hanya action diarahkan ke file ini sendiri -->
+   <div class="container">
+    <h2><i class="fas fa-clipboard-list"></i> FORM KUNJUNGAN UMUM</h2>
     
-    <form action="/admin/tamu/store" method="POST" id="ortuForm">
+    
+     <form action="" method="POST" id="tamuForm" enctype="multipart/form-data">
       <div class="form-row">
         <!-- Nama -->
         <div class="form-group" style="--delay: 1">
           <label for="nama">
-            <i class="fas fa-user"></i>Nama Lengkap Orang Tua Siswa/I
+            <i class="fas fa-user"></i>Nama Lengkap
           </label>
           <input type="text" id="nama" name="nama" required placeholder="Masukkan nama lengkap Anda">
         </div>
 
-        <!-- Nama Siswa/i-->
+      
+      <!-- Identitas -->
         <div class="form-group" style="--delay: 2">
-          <label for="nama_siswa">
-            <i class="fas fa-graduation-cap"></i>Nama Lengkap Siswa/i
+          <label for="identitas">
+            <i class="fas fa-building"></i>Identitas
           </label>
-          <input type="text" id="nama_siswa" name="nama_siswa" required placeholder="Masukkan nama lengkap siswa/i">
+          <input type="text" id="identitas" name="identitas" required placeholder="Masukkan identitas Anda contoh: Alumni">
         </div>
       </div>
 
-      <label for="kelas">📘 Pilih Kelas</label>
-<select id="kelas" name="kelas" class="form-control">
-  <option value="">-- Pilih Kelas --</option>
-
-  <!-- RPL -->
-  <option value="RPL-10-1">RPL 10-1</option>
-  <option value="RPL-10-2">RPL 10-2</option>
-  <option value="RPL-11-1">RPL 11-1</option>
-  <option value="RPL-11-2">RPL 11-2</option>
-  <option value="RPL-12-1">RPL 12-1</option>
-  <option value="RPL-12-2">RPL 12-2</option>
-
-
-  <!-- TKJ -->
-  <option value="TKJ-10-1">TKJ 10-1</option>
-  <option value="TKJ-10-2">TKJ 10-2</option>
-  <option value="TKJ-10-3">TKJ 10-3</option>
-
-  <option value="TKJ-11-1">TKJ 11-1</option>
-  <option value="TKJ-11-2">TKJ 11-2</option>
-  <option value="TKJ-11-3">TKJ 11-3</option>
-
-  <option value="TKJ-12-1">TKJ 12-1</option>
-  <option value="TKJ-12-2">TKJ 12-2</option>
-  <option value="TKJ-12-3">TKJ 12-3</option>
-
-  <!-- KA -->
-  <option value="KA-10-1">KA 10-1</option>
-  <option value="KA-10-2">KA 10-2</option>
-  <option value="KA-10-3">KA 10-3</option>
-  <option value="KA-10-4">KA 10-4</option>
-  <option value="KA-10-5">KA 10-5</option>
-  <option value="KA-10-6">KA 10-6</option>
-
-  <option value="KA-11-1">KA 11-1</option>
-  <option value="KA-11-2">KA 11-2</option>
-  <option value="KA-11-3">KA 11-3</option>
-  <option value="KA-11-4">KA 11-4</option>
-  <option value="KA-11-5">KA 11-5</option>
-  <option value="KA-11-6">KA 11-6</option>
-
-  <option value="KA-12-1">KA 12-1</option>
-  <option value="KA-12-2">KA 12-2</option>
-  <option value="KA-12-3">KA 12-3</option>
-  <option value="KA-12-4">KA 12-4</option>
-  <option value="KA-12-5">KA 12-5</option>
-  <option value="KA-12-6">KA 12-6</option>
-
-  <option value="KA-13-1">KA 13-1</option>
-  <option value="KA-13-2">KA 13-2</option>
-  <option value="KA-13-3">KA 13-3</option>
-  <option value="KA-13-4">KA 13-4</option>
-  <option value="KA-13-5">KA 13-5</option>
-  <option value="KA-13-6">KA 13-6</option>
-
-  
-</select>
-
-
-      
-
-      <!-- Alamat -->
+        <!-- Keperluan -->
       <div class="form-group full-width" style="--delay: 3">
-        <label for="alamat">
-          <i class="fas fa-map-marker-alt"></i>Alamat
-        </label>
-        <textarea id="alamat" name="alamat" required rows="4" placeholder="Masukkan alamat Anda"></textarea>
-      </div>
-
-      <!-- Keperluan -->
-      <div class="form-group full-width" style="--delay: 4">
         <label for="keperluan">
           <i class="fas fa-clipboard"></i>Keperluan
         </label>
         <textarea id="keperluan" name="keperluan" required rows="4" placeholder="Jelaskan tujuan kunjungan Anda secara singkat"></textarea>
       </div>
 
-      <div class="form-row">
+     <div class="form-row">
         <!-- Kontak -->
-        <div class="form-group" style="--delay: 5">
+        <div class="form-group" style="--delay: 4">
           <label for="kontak">
             <i class="fas fa-phone"></i>Nomor Kontak
           </label>
           <input type="tel" id="kontak" name="kontak" placeholder="Contoh: 08123456789">
         </div>
+
+      
 
         <!-- Pilih Guru -->
         <div class="form-group" style="--delay: 6">
@@ -318,7 +292,6 @@
     <p>Menjadi sekolah kejuruan yang menghasilkan tamatan kompeten dan berkarakter</p>
     <p style="margin-top: 10px; font-size: 12px;">Dibuat Oleh Curif | Menggunakan HTML, CSS dan JavaScript</p>
   </footer>
-
   <script src="js/script.js"></script>
 </body>
 </html>

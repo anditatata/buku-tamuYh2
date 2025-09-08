@@ -1,3 +1,45 @@
+<?php
+// Jalankan hanya saat form disubmit
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    // Koneksi DB
+    $conn = new mysqli("localhost", "root", "", "db_bukutamu");
+    if ($conn->connect_error) {
+        die("Koneksi gagal: " . $conn->connect_error);
+    }
+
+    // Ambil data dari form
+    $nama      = $_POST['nama'] ?? '';
+    $identitas = $_POST['identitas'] ?? '';
+    $keperluan = $_POST['keperluan'] ?? '';
+    $kontak    = $_POST['kontak'] ?? '';
+    $guru      = $_POST['guru'] ?? '';
+    $waktu     = $_POST['waktu'] ?? '';
+    $tanggal   = $_POST['tanggal'] ?? '';
+    $foto_data = $_POST['foto_data'] ?? '';
+
+    // Simpan foto base64 (jika ada)
+    $foto_path = null;
+    if (!empty($foto_data)) {
+        $img = str_replace('data:image/png;base64,', '', $foto_data);
+        $img = str_replace(' ', '+', $img);
+        $imgData = base64_decode($img);
+
+        $foto_path = "uploads/" . uniqid() . ".png";
+        if (!is_dir("uploads")) mkdir("uploads");
+        file_put_contents($foto_path, $imgData);
+    }
+
+    // Insert ke instansi (dummy juga karena form belum ada jumlah peserta)
+    $sql_instansi = "INSERT INTO instansi (nama, instansi_asal, keperluan, kontak, guru_dituju, jumlah_peserta, waktu_kunjungan, tanggal_kunjungan, foto, created_at, updated_at)
+                     VALUES ('$nama', '$identitas', '$keperluan', '$kontak', '$guru', 1, '$waktu', '$tanggal', '$foto_path', NOW(), NOW())";
+    $conn->query($sql_instansi);
+
+    $conn->close();
+
+    echo "<script>alert('Data berhasil disimpan ke semua tabel!'); window.location.href='instansi.php'</script>";
+}
+?>
+
 <!DOCTYPE html>
 <html lang="id">
 <head>
@@ -10,7 +52,7 @@
 </head>
 <body>
   <!-- Back Button -->
-  <a href="dashboard.html" class="back-btn">
+  <a href="index.html" class="back-btn">
     <i class="fas fa-arrow-left"></i>
     Kembali ke Halaman Utama
   </a>

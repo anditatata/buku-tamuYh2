@@ -1,3 +1,44 @@
+<?php
+// Jalankan hanya saat form disubmit
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    // Koneksi DB
+    $conn = new mysqli("localhost", "root", "", "db_bukutamu");
+    if ($conn->connect_error) {
+        die("Koneksi gagal: " . $conn->connect_error);
+    }
+
+    // Ambil data dari form
+    $nama      = $_POST['nama'] ?? '';
+    $identitas = $_POST['identitas'] ?? '';
+    $keperluan = $_POST['keperluan'] ?? '';
+    $kontak    = $_POST['kontak'] ?? '';
+    $guru      = $_POST['guru'] ?? '';
+    $waktu     = $_POST['waktu'] ?? '';
+    $tanggal   = $_POST['tanggal'] ?? '';
+    $foto_data = $_POST['foto_data'] ?? '';
+
+    // Simpan foto base64 (jika ada)
+    $foto_path = null;
+    if (!empty($foto_data)) {
+        $img = str_replace('data:image/png;base64,', '', $foto_data);
+        $img = str_replace(' ', '+', $img);
+        $imgData = base64_decode($img);
+
+        $foto_path = "uploads/" . uniqid() . ".png";
+        if (!is_dir("uploads")) mkdir("uploads");
+        file_put_contents($foto_path, $imgData);
+    }
+
+    // // Insert ke orangtua (dummy karena form kamu belum punya field anak/kelas/alamat)
+    $sql_ortu = "INSERT INTO orangtua (nama_orangtua, nama_siswa, kelas, alamat, kontak, guru_dituju, keperluan, waktu_kunjungan, tanggal, foto, created_at, updated_at)
+                 VALUES ('$nama', '-', '-', '-', '$kontak', '$guru', '$keperluan', '$waktu', '$tanggal', '$foto_path', NOW(), NOW())";
+    $conn->query($sql_ortu);
+
+    $conn->close();
+
+    echo "<script>alert('Data berhasil disimpan ke semua tabel!'); window.location.href='ortu.php';</script>";
+}
+?>
 <!DOCTYPE html>
 <html lang="id">
 <head>
@@ -6,18 +47,18 @@
   <title>Buku Tamu Instansi</title>
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-  <link rel="stylesheet" href="css/styles.css">
+    <link rel="stylesheet" href="css/styles.css">
 </head>
 <body>
   <!-- Back Button -->
-  <a href="dashboard.html" class="back-btn">
+  <a href="index.html" class="back-btn">
     <i class="fas fa-arrow-left"></i>
     Kembali ke Halaman Utama
   </a>
 
   <!-- Header -->
 <header>
-    <h1><i class="fas fa-building animate-pulse"></i> BUKU TAMU UMUM<br>SMKN 13 BANDUNG</h1>
+    <h1><i class="fas fa-building animate-pulse"></i> BUKU TAMU ORANG TUA SISWA/I<br>SMKN 13 BANDUNG</h1>
     <div class="social-icons">
       <a href="https://www.facebook.com/share/1FhqvT1T2P/"><i class="fab fa-facebook"></i></a>
      
@@ -28,47 +69,112 @@
 
   <!-- Form Container -->
   <div class="container">
-    <h2><i class="fas fa-clipboard-list"></i> FORM KUNJUNGAN UMUM</h2>
+    <h2><i class="fas fa-clipboard-list"></i> FORM KUNJUNGAN ORANG TUA SISWA/I</h2>
     
-    
-     <form method="POST" id="tamuForm" enctype="multipart/form-data">
+    <form action="/admin/tamu/store" method="POST" id="ortuForm">
       <div class="form-row">
         <!-- Nama -->
         <div class="form-group" style="--delay: 1">
           <label for="nama">
-            <i class="fas fa-user"></i>Nama Lengkap
+            <i class="fas fa-user"></i>Nama Lengkap Orang Tua Siswa/I
           </label>
           <input type="text" id="nama" name="nama" required placeholder="Masukkan nama lengkap Anda">
         </div>
 
-      
-      <!-- Identitas -->
+        <!-- Nama Siswa/i-->
         <div class="form-group" style="--delay: 2">
-          <label for="identitas">
-            <i class="fas fa-building"></i>Identitas
+          <label for="nama_siswa">
+            <i class="fas fa-graduation-cap"></i>Nama Lengkap Siswa/i
           </label>
-          <input type="text" id="identitas" name="identitas" required placeholder="Masukkan identitas Anda contoh: Alumni">
+          <input type="text" id="nama_siswa" name="nama_siswa" required placeholder="Masukkan nama lengkap siswa/i">
         </div>
       </div>
 
-        <!-- Keperluan -->
+      <label for="kelas">📘 Pilih Kelas</label>
+<select id="kelas" name="kelas" class="form-control">
+  <option value="">-- Pilih Kelas --</option>
+
+  <!-- RPL -->
+  <option value="RPL-10-1">RPL 10-1</option>
+  <option value="RPL-10-2">RPL 10-2</option>
+  <option value="RPL-11-1">RPL 11-1</option>
+  <option value="RPL-11-2">RPL 11-2</option>
+  <option value="RPL-12-1">RPL 12-1</option>
+  <option value="RPL-12-2">RPL 12-2</option>
+
+
+  <!-- TKJ -->
+  <option value="TKJ-10-1">TKJ 10-1</option>
+  <option value="TKJ-10-2">TKJ 10-2</option>
+  <option value="TKJ-10-3">TKJ 10-3</option>
+
+  <option value="TKJ-11-1">TKJ 11-1</option>
+  <option value="TKJ-11-2">TKJ 11-2</option>
+  <option value="TKJ-11-3">TKJ 11-3</option>
+
+  <option value="TKJ-12-1">TKJ 12-1</option>
+  <option value="TKJ-12-2">TKJ 12-2</option>
+  <option value="TKJ-12-3">TKJ 12-3</option>
+
+  <!-- KA -->
+  <option value="KA-10-1">KA 10-1</option>
+  <option value="KA-10-2">KA 10-2</option>
+  <option value="KA-10-3">KA 10-3</option>
+  <option value="KA-10-4">KA 10-4</option>
+  <option value="KA-10-5">KA 10-5</option>
+  <option value="KA-10-6">KA 10-6</option>
+
+  <option value="KA-11-1">KA 11-1</option>
+  <option value="KA-11-2">KA 11-2</option>
+  <option value="KA-11-3">KA 11-3</option>
+  <option value="KA-11-4">KA 11-4</option>
+  <option value="KA-11-5">KA 11-5</option>
+  <option value="KA-11-6">KA 11-6</option>
+
+  <option value="KA-12-1">KA 12-1</option>
+  <option value="KA-12-2">KA 12-2</option>
+  <option value="KA-12-3">KA 12-3</option>
+  <option value="KA-12-4">KA 12-4</option>
+  <option value="KA-12-5">KA 12-5</option>
+  <option value="KA-12-6">KA 12-6</option>
+
+  <option value="KA-13-1">KA 13-1</option>
+  <option value="KA-13-2">KA 13-2</option>
+  <option value="KA-13-3">KA 13-3</option>
+  <option value="KA-13-4">KA 13-4</option>
+  <option value="KA-13-5">KA 13-5</option>
+  <option value="KA-13-6">KA 13-6</option>
+
+  
+</select>
+
+
+      
+
+      <!-- Alamat -->
       <div class="form-group full-width" style="--delay: 3">
+        <label for="alamat">
+          <i class="fas fa-map-marker-alt"></i>Alamat
+        </label>
+        <textarea id="alamat" name="alamat" required rows="4" placeholder="Masukkan alamat Anda"></textarea>
+      </div>
+
+      <!-- Keperluan -->
+      <div class="form-group full-width" style="--delay: 4">
         <label for="keperluan">
           <i class="fas fa-clipboard"></i>Keperluan
         </label>
         <textarea id="keperluan" name="keperluan" required rows="4" placeholder="Jelaskan tujuan kunjungan Anda secara singkat"></textarea>
       </div>
 
-     <div class="form-row">
+      <div class="form-row">
         <!-- Kontak -->
-        <div class="form-group" style="--delay: 4">
+        <div class="form-group" style="--delay: 5">
           <label for="kontak">
             <i class="fas fa-phone"></i>Nomor Kontak
           </label>
           <input type="tel" id="kontak" name="kontak" placeholder="Contoh: 08123456789">
         </div>
-
-      
 
         <!-- Pilih Guru -->
         <div class="form-group" style="--delay: 6">
@@ -255,20 +361,5 @@
   </footer>
 
   <script src="js/script.js"></script>
-  <script>
-    //Store data
-    document.getElementById("tamuForm").addEventListener("submit", async (e) => {
-  e.preventDefault();
-  let formData = new FormData(e.target);
-
-  let response = await fetch("http://127.0.0.1:8000/tamu-umum/store", {
-    method: "POST",
-    body: formData
-  });
-
-  let result = await response.json();
-  alert(result.message);
-});
-  </script>
 </body>
 </html>
