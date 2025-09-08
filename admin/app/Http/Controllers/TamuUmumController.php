@@ -100,7 +100,44 @@ class TamuUmumController extends Controller
 
         return redirect()->route('tamu_umum.index')->with('success', 'Data tamu umum berhasil disimpan!');
     }
+public function storeUmum(Request $request)
+    {
+        // Validasi data
+        $validated = $request->validate([
+            'nama' => 'required|string|max:255',
+            'identitas' => 'required|string|max:255',
+            'keperluan' => 'required|string',
+            'kontak' => 'nullable|string|max:20',
+            'guru' => 'nullable|string|max:255',
+            'waktu' => 'required',
+            'tanggal' => 'required|date',
+            'foto_data' => 'nullable|string',
+        ]);
 
+        // Simpan ke database
+        $tamu = new Tamu();
+        $tamu->nama = $validated['nama'];
+        $tamu->identitas = $validated['identitas'];
+        $tamu->keperluan = $validated['keperluan'];
+        $tamu->kontak = $validated['kontak'] ?? null;
+        $tamu->guru = $validated['guru'] ?? null;
+        $tamu->waktu = $validated['waktu'];
+        $tamu->tanggal = $validated['tanggal'];
+
+        // Simpan foto base64 kalau ada
+        if (!empty($validated['foto_data'])) {
+            $image = str_replace('data:image/png;base64,', '', $validated['foto_data']);
+            $image = str_replace(' ', '+', $image);
+            $imageName = 'foto_'.time().'.png';
+            \File::put(public_path('uploads/foto/'.$imageName), base64_decode($image));
+            $tamu->foto = $imageName;
+        }
+
+        $tamu->save();
+
+        return response()->json(['message' => 'Data tamu berhasil disimpan!']);
+    }
+    
     public function edit(TamuUmum $tamu_umum)
     {
         return view('tamu_umum.edit', compact('tamu_umum'));
