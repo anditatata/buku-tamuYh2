@@ -31,7 +31,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     // // Insert ke orangtua (dummy karena form kamu belum punya field anak/kelas/alamat)
     $sql_ortu = "INSERT INTO orangtua (nama_orangtua, nama_siswa, kelas, alamat, kontak, guru_dituju, keperluan, waktu_kunjungan, tanggal, foto, created_at, updated_at)
-                 VALUES ('$nama', '-', '-', '-', '$kontak', '$guru', '$keperluan', '$waktu', '$tanggal', '$foto_path', NOW(), NOW())";
+                 VALUES ('$nama', '', '-', '-', '$kontak', '$guru', '$keperluan', '$waktu', '$tanggal', '$foto_path', NOW(), NOW())";
     $conn->query($sql_ortu);
 
     $conn->close();

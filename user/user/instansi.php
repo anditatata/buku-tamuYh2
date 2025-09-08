@@ -9,12 +9,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     // Ambil data dari form
     $nama      = $_POST['nama'] ?? '';
-    $identitas = $_POST['identitas'] ?? '';
+    $instansi_asal = $_POST['instansi_asal'] ?? '';
     $keperluan = $_POST['keperluan'] ?? '';
     $kontak    = $_POST['kontak'] ?? '';
-    $guru      = $_POST['guru'] ?? '';
-    $waktu     = $_POST['waktu'] ?? '';
-    $tanggal   = $_POST['tanggal'] ?? '';
+    $guru_dituju = $_POST['guru_dituju'] ?? '';
+    $jumlah_peserta     = $_POST['jumlah_peserta'] ?? '';
+    $waktu_kunjungan     = $_POST['waktu_kunjungan'] ?? '';
+    $tanggal_kunjugan   = $_POST['tanggal_kunjungan'] ?? '';
     $foto_data = $_POST['foto_data'] ?? '';
 
     // Simpan foto base64 (jika ada)
@@ -31,7 +32,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     // Insert ke instansi (dummy juga karena form belum ada jumlah peserta)
     $sql_instansi = "INSERT INTO instansi (nama, instansi_asal, keperluan, kontak, guru_dituju, jumlah_peserta, waktu_kunjungan, tanggal_kunjungan, foto, created_at, updated_at)
-                     VALUES ('$nama', '$identitas', '$keperluan', '$kontak', '$guru', 1, '$waktu', '$tanggal', '$foto_path', NOW(), NOW())";
+                     VALUES ('$nama', '$identitas', '$keperluan', '$kontak', '$guru_dituju', 1, '$waktu', '$tanggal', '$foto_path', NOW(), NOW())";
     $conn->query($sql_instansi);
 
     $conn->close();
@@ -110,13 +111,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
           <input type="tel" id="kontak" name="kontak" placeholder="Contoh: 08123456789">
         </div>
 
-        <!-- Pilih Guru -->
+        <!-- Pilih guru_dituju -->
         <div class="form-group" style="--delay: 6">
-          <label for="guru">
-            <i class="fas fa-chalkboard-teacher"></i>Guru yang Dituju
+          <label for="guru_dituju">
+            <i class="fas fa-chalkboard-teacher"></i>guru_dituju yang Dituju
           </label>
-          <select id="guru" name="guru">
-            <option value="">-- Pilih Guru --</option>
+          <select id="guru_dituju" name="guru_dituju">
+            <option value="">-- Pilih guru_dituju --</option>
             <option value="A.R Fauzan, S.Ip. M.M">A.R Fauzan, S.Ip. M.M</option>
             <option value="Ade Hartono, S.Pd">Ade Hartono, S.Pd</option>
             <option value="Ade Rahmat Nugraha">Ade Rahmat Nugraha</option>

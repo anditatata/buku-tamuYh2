@@ -38,7 +38,8 @@ document.addEventListener('DOMContentLoaded', function() {
           video: {
             width: { ideal: 640 },
             height: { ideal: 480 },
-            facingMode: 'user' // Front camera for selfie
+            facingMode: 'user', // Front camera for selfie,
+            
           }
         });
         
@@ -47,6 +48,7 @@ document.addEventListener('DOMContentLoaded', function() {
         
         camera.srcObject = cameraStream;
         camera.style.display = 'block';
+        camera.style.transform = 'scaleX(-1)'; // Tambahkan agar video tidak mirror
         
         // Update button visibility
         startCameraBtn.style.display = 'none';
@@ -90,10 +92,11 @@ document.addEventListener('DOMContentLoaded', function() {
       canvas.width = camera.videoWidth;
       canvas.height = camera.videoHeight;
       
-      // Draw the video frame to canvas (flip horizontally for selfie mode)
+      // Draw the video frame to canvas (flip horizontally agar hasil tidak mirror)
       const ctx = canvas.getContext('2d');
-      ctx.scale(-1, 1); // Flip horizontally
-      ctx.drawImage(camera, -canvas.width, 0, canvas.width, canvas.height);
+      ctx.setTransform(-1, 0, 0, 1, canvas.width, 0); // Flip horizontal
+      ctx.drawImage(camera, 0, 0, canvas.width, canvas.height);
+      ctx.setTransform(1, 0, 0, 1, 0, 0); // Reset transform
       
       // Convert to data URL
       const dataURL = canvas.toDataURL('image/jpeg', 0.8);
@@ -135,6 +138,7 @@ document.addEventListener('DOMContentLoaded', function() {
       
       camera.style.display = 'none';
       camera.srcObject = null;
+      camera.style.transform = 'none'; // Reset transform
       
       // Update button visibility
       startCameraBtn.style.display = 'inline-flex';
