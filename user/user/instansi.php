@@ -9,12 +9,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     // Ambil data dari form
     $nama      = $_POST['nama'] ?? '';
-    $identitas = $_POST['identitas'] ?? '';
+    $instansi_asal = $_POST['instansi_asal'] ?? '';
     $keperluan = $_POST['keperluan'] ?? '';
     $kontak    = $_POST['kontak'] ?? '';
-    $guru      = $_POST['guru'] ?? '';
-    $waktu     = $_POST['waktu'] ?? '';
-    $tanggal   = $_POST['tanggal'] ?? '';
+    $guru_dituju = $_POST['guru_dituju'] ?? '';
+    $jumlah_peserta     = $_POST['jumlah_peserta'] ?? '';
+    $waktu_kunjungan     = $_POST['waktu_kunjungan'] ?? '';
+    $tanggal_kunjungan   = $_POST['tanggal_kunjungan'] ?? '';
     $foto_data = $_POST['foto_data'] ?? '';
 
     // Simpan foto base64 (jika ada)
@@ -24,14 +25,37 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $img = str_replace(' ', '+', $img);
         $imgData = base64_decode($img);
 
-        $foto_path = "uploads/" . uniqid() . ".png";
-        if (!is_dir("uploads")) mkdir("uploads");
-        file_put_contents($foto_path, $imgData);
+  // Ganti path folder jadi langsung ke Laravel storage
+// Path ke folder storage Laravel (admin)
+// Ambil type dari base64, misalnya "data:image/jpeg;base64,..."
+if (preg_match('/^data:image\/(\w+);base64,/', $foto_data, $type)) {
+  $img = substr($foto_data, strpos($foto_data, ',') + 1);
+  $type = strtolower($type[1]); // jpg, png, gif
+  if (!in_array($type, ['jpg','jpeg','png','gif'])) {
+    throw new Exception('Invalid image type');
+  }
+  $imgData = base64_decode($img);
+
+  // Nama file unik
+  $filename = uniqid() . '.' . $type;
+  // Path ke storage Laravel (pastikan folder sudah ada dan permission benar)
+  $storagePath = dirname(__DIR__, 2) . '/admin/storage/app/public/instansi/';
+  if (!is_dir($storagePath)) {
+    mkdir($storagePath, 0777, true);
+  }
+  $fullpath = $storagePath . $filename;
+  file_put_contents($fullpath, $imgData);
+
+  // Path yang disimpan ke DB (agar bisa diakses via Laravel storage:link)
+  $foto_path = 'instansi/' . $filename;
+
+}
+
     }
 
     // Insert ke instansi (dummy juga karena form belum ada jumlah peserta)
     $sql_instansi = "INSERT INTO instansi (nama, instansi_asal, keperluan, kontak, guru_dituju, jumlah_peserta, waktu_kunjungan, tanggal_kunjungan, foto, created_at, updated_at)
-                     VALUES ('$nama', '$identitas', '$keperluan', '$kontak', '$guru', 1, '$waktu', '$tanggal', '$foto_path', NOW(), NOW())";
+                     VALUES ('$nama', '$instansi_asal', '$keperluan', '$kontak', '$guru_dituju','$jumlah_peserta' , '$waktu_kunjungan', '$tanggal_kunjungan', '$foto_path', NOW(), NOW())";
     $conn->query($sql_instansi);
 
     $conn->close();
@@ -72,7 +96,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
   <div class="container">
     <h2><i class="fas fa-clipboard-list"></i> FORM KUNJUNGAN INSTANSI</h2>
     
-    <form action="/admin/tamu/store" method="POST" id="instansiForm">
+    <form action="" method="POST" id="instansiForm">
       <div class="form-row">
         <!-- Nama -->
         <div class="form-group" style="--delay: 1">
@@ -85,9 +109,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
          <!-- Instansi -->
         <div class="form-group" style="--delay: 2">
           <label for="instansi">
-            <i class="fas fa-building"></i>Instansi/Asal
+            <i class="fas fa-building"></i>Instansi Asal
           </label>
-          <input type="text" id="instansi" name="instansi" required placeholder="Nama instansi atau asal organisasi">
+          <input type="text" id="instansi_asal" name="instansi_asal" required placeholder="Nama instansi atau asal organisasi">
         </div>
       </div>
 
@@ -110,13 +134,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
           <input type="tel" id="kontak" name="kontak" placeholder="Contoh: 08123456789">
         </div>
 
-        <!-- Pilih Guru -->
+        <!-- Pilih guru_dituju -->
         <div class="form-group" style="--delay: 6">
-          <label for="guru">
-            <i class="fas fa-chalkboard-teacher"></i>Guru yang Dituju
+          <label for="guru_dituju">
+            <i class="fas fa-chalkboard-teacher"></i>Guru yang dituju
           </label>
-          <select id="guru" name="guru">
-            <option value="">-- Pilih Guru --</option>
+          <select id="guru_dituju" name="guru_dituju">
+            <option value="">-- Pilih guru dituju --</option>
             <option value="A.R Fauzan, S.Ip. M.M">A.R Fauzan, S.Ip. M.M</option>
             <option value="Ade Hartono, S.Pd">Ade Hartono, S.Pd</option>
             <option value="Ade Rahmat Nugraha">Ade Rahmat Nugraha</option>
@@ -224,22 +248,31 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
           </select>
         </div>
       </div>
+      
+      <div class="form-row">
+        <!-- Nama -->
+        <div class="form-group" style="--delay: 6">
+          <label for="jumlah_peserta">
+            <i class="fas fa-user"></i>Jumlah Peserta
+          </label>
+          <input type="number" id="jumlah_peserta" name="jumlah_peserta" >
+</div>
 
       <div class="form-row">
         <!-- Waktu -->
         <div class="form-group" style="--delay: 7">
-          <label for="waktu">
+          <label for="waktu_kunjungan">
             <i class="fas fa-clock"></i>Waktu Kunjungan
           </label>
-          <input type="time" id="waktu" name="waktu" required>
+          <input type="time" id="waktu_kunjungan" name="waktu_kunjungan" required>
         </div>
 
         <!-- Tanggal -->
         <div class="form-group" style="--delay: 8">
-          <label for="tanggal">
+          <label for="tanggal_kunjungan">
             <i class="fas fa-calendar"></i>Tanggal Kunjungan
           </label>
-          <input type="date" id="tanggal" name="tanggal" required>
+          <input type="date" id="tanggal_kunjungan" name="tanggal_kunjungan" required>
         </div>
       </div>
 

@@ -24,9 +24,27 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $img = str_replace(' ', '+', $img);
         $imgData = base64_decode($img);
 
-        $foto_path = "/admin/storage/app/public/tamu_umum/" . uniqid() . ".png";
-        if (!is_dir("uploads")) mkdir("uploads");
-        file_put_contents($foto_path, $imgData);
+    if (preg_match('/^data:image\/(\w+);base64,/', $foto_data, $type)) {
+  $img = substr($foto_data, strpos($foto_data, ',') + 1);
+  $type = strtolower($type[1]); // jpg, png, gif
+  if (!in_array($type, ['jpg','jpeg','png','gif'])) {
+    throw new Exception('Invalid image type');
+  }
+  $imgData = base64_decode($img);
+
+  // Nama file unik
+  $filename = uniqid() . '.' . $type;
+  // Path ke storage Laravel (pastikan folder sudah ada dan permission benar)
+  $storagePath = dirname(__DIR__, 2) . '/admin/storage/app/public/tamu_umum/';
+  if (!is_dir($storagePath)) {
+    mkdir($storagePath, 0777, true);
+  }
+  $fullpath = $storagePath . $filename;
+  file_put_contents($fullpath, $imgData);
+
+  // Path yang disimpan ke DB (agar bisa diakses via Laravel storage:link)
+  $foto_path = 'tamu_umum/' . $filename;  
+}
     }
 
     // Insert ke tamu_umum
@@ -57,7 +75,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
   </a>
 
   <header>
-    <h1><i class="fas fa-building animate-pulse"></i> BUKU TAMU ORANG TUA SISWA/I<br>SMKN 13 BANDUNG</h1>
+    <h1><i class="fas fa-building animate-pulse"></i> BUKU TAMU UMUM<br>SMKN 13 BANDUNG</h1>
     <div class="social-icons">
       <a href="https://www.facebook.com/share/1FhqvT1T2P/"><i class="fab fa-facebook"></i></a>
      

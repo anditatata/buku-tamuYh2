@@ -26,33 +26,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $img = str_replace(' ', '+', $img);
         $imgData = base64_decode($img);
 
-       if (preg_match('/^data:image\/(\w+);base64,/', $foto_data, $type)) {
-  $img = substr($foto_data, strpos($foto_data, ',') + 1);
-  $type = strtolower($type[1]); // jpg, png, gif
-  if (!in_array($type, ['jpg','jpeg','png','gif'])) {
-    throw new Exception('Invalid image type');
-  }
-}
-  $imgData = base64_decode($img);
-
-  // Nama file unik
-  $filename = uniqid() . '.' . $type;
-  // Path ke storage Laravel (pastikan folder sudah ada dan permission benar)
-  $storagePath = dirname(__DIR__, 2) . '/admin/storage/app/public/ortu/';
-  if (!is_dir($storagePath)) {
-    mkdir($storagePath, 0777, true);
-  }
-  $fullpath = $storagePath . $filename;
-  file_put_contents($fullpath, $imgData);
-
-  // Path yang disimpan ke DB (agar bisa diakses via Laravel storage:link)
-  $foto_path = 'ortu/' . $filename;
+        $foto_path = "uploads/" . uniqid() . ".png";
+        if (!is_dir("uploads")) mkdir("uploads");
+        file_put_contents($foto_path, $imgData);
     }
 
     // // Insert ke orangtua (dummy karena form kamu belum punya field anak/kelas/alamat)
-  $sql_ortu = "INSERT INTO orangtua (nama_orangtua, nama_siswa, kelas, alamat, kontak, guru_dituju, keperluan, waktu_kunjungan, tanggal, foto, created_at, updated_at)
-             VALUES ('$nama', '$nama_siswa', '$kelas', '$alamat', '$kontak', '$guru', '$keperluan', '$waktu', '$tanggal', '$foto_path', NOW(), NOW())";
-
+    $sql_ortu = "INSERT INTO orangtua (nama_orangtua, nama_siswa, kelas, alamat, kontak, guru_dituju, keperluan, waktu_kunjungan, tanggal, foto, created_at, updated_at)
+                 VALUES ('$nama', '-', '-', '-', '$kontak', '$guru', '$keperluan', '$waktu', '$tanggal', '$foto_path', NOW(), NOW())";
     $conn->query($sql_ortu);
 
     $conn->close();
@@ -92,7 +73,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
   <div class="container">
     <h2><i class="fas fa-clipboard-list"></i> FORM KUNJUNGAN ORANG TUA SISWA/I</h2>
     
-    <form action="ortu.php" method="POST" id="ortuForm">
+    <form action="/admin/tamu/store" method="POST" id="ortuForm">
       <div class="form-row">
         <!-- Nama -->
         <div class="form-group" style="--delay: 1">
