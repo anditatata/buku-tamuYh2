@@ -216,7 +216,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             <option value="Ujang Suhara, S.Pd">Ujang Suhara, S.Pd</option>
             <option value="Uli Solihat Kamaluddin, S.Si, Gr">Uli Solihat Kamaluddin, S.Si, Gr</option>
             <option value="Wanto Kurniawan">Wanto Kurniawan</option>
-            <option value="Windawati Aisah, S.Si, S.Pd">Windawati Aisah, S.Si, S.Pd</option>
+          
             <option value="Windy Novia Anggraeni, S.Si">Windy Novia Anggraeni, S.Si</option>
             <option value="Yeni Meilina, S.Pd">Yeni Meilina, S.Pd</option>
             <option value="Zaka Faishal Hadiyan S, Kom">Zaka Faishal Hadiyan S, Kom</option>
@@ -290,7 +290,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
   <footer>
     <p><i class="fas fa-school"></i> <strong>SMKN 13 BANDUNG</strong></p>
     <p>Menjadi sekolah kejuruan yang menghasilkan tamatan kompeten dan berkarakter</p>
-    <p style="margin-top: 10px; font-size: 12px;">Dibuat Oleh Curif | Menggunakan HTML, CSS dan JavaScript</p>
+    <p style="margin-top: 10px; font-size: 12px;">Dibuat Oleh Curi | Menggunakan HTML, CSS dan JavaScript</p>
   </footer>
   <script src="js/script.js"></script>
 </body>
