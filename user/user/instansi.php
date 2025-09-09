@@ -25,16 +25,37 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $img = str_replace(' ', '+', $img);
         $imgData = base64_decode($img);
 
-        $folder = __DIR__ . "/admin/public/storage/instansi/";
-        if (!is_dir($folder)) mkdir($folder, 0777, true);
-        $filename = uniqid() . ".png";
-        file_put_contents($folder . $filename, $imgData);
-        $foto_path = "instansi/" . $filename;
+  // Ganti path folder jadi langsung ke Laravel storage
+// Path ke folder storage Laravel (admin)
+// Ambil type dari base64, misalnya "data:image/jpeg;base64,..."
+if (preg_match('/^data:image\/(\w+);base64,/', $foto_data, $type)) {
+  $img = substr($foto_data, strpos($foto_data, ',') + 1);
+  $type = strtolower($type[1]); // jpg, png, gif
+  if (!in_array($type, ['jpg','jpeg','png','gif'])) {
+    throw new Exception('Invalid image type');
+  }
+  $imgData = base64_decode($img);
+
+  // Nama file unik
+  $filename = uniqid() . '.' . $type;
+  // Path ke storage Laravel (pastikan folder sudah ada dan permission benar)
+  $storagePath = dirname(__DIR__, 2) . '/admin/storage/app/public/instansi/';
+  if (!is_dir($storagePath)) {
+    mkdir($storagePath, 0777, true);
+  }
+  $fullpath = $storagePath . $filename;
+  file_put_contents($fullpath, $imgData);
+
+  // Path yang disimpan ke DB (agar bisa diakses via Laravel storage:link)
+  $foto_path = 'instansi/' . $filename;
+
+}
+
     }
 
     // Insert ke instansi (dummy juga karena form belum ada jumlah peserta)
     $sql_instansi = "INSERT INTO instansi (nama, instansi_asal, keperluan, kontak, guru_dituju, jumlah_peserta, waktu_kunjungan, tanggal_kunjungan, foto, created_at, updated_at)
-                     VALUES ('$nama', '$instansi_asal', '$keperluan', '$kontak', '$guru_dituju', 1, '$waktu_kunjungan', '$tanggal_kunjungan', '$foto_path', NOW(), NOW())";
+                     VALUES ('$nama', '$instansi_asal', '$keperluan', '$kontak', '$guru_dituju','$jumlah_peserta' , '$waktu_kunjungan', '$tanggal_kunjungan', '$foto_path', NOW(), NOW())";
     $conn->query($sql_instansi);
 
     $conn->close();
@@ -227,6 +248,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
           </select>
         </div>
       </div>
+      
+      <div class="form-row">
+        <!-- Nama -->
+        <div class="form-group" style="--delay: 6">
+          <label for="jumlah_peserta">
+            <i class="fas fa-user"></i>Jumlah Peserta
+          </label>
+          <input type="number" id="jumlah_peserta" name="jumlah_peserta" >
+</div>
 
       <div class="form-row">
         <!-- Waktu -->
