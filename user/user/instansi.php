@@ -14,8 +14,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $kontak    = $_POST['kontak'] ?? '';
     $guru_dituju = $_POST['guru_dituju'] ?? '';
     $jumlah_peserta     = $_POST['jumlah_peserta'] ?? '';
-    $waktu_kunjungan     = $_POST['waktu_kunjungan'] ?? '';
-    $tanggal_kunjungan   = $_POST['tanggal_kunjungan'] ?? '';
+    $waktu_kunjungan     = $_POST['waktu'] ?? '';
+    $tanggal_kunjungan   = $_POST['tanggal'] ?? '';
     $foto_data = $_POST['foto_data'] ?? '';
 
     // Simpan foto base64 (jika ada)
@@ -256,23 +256,22 @@ if (preg_match('/^data:image\/(\w+);base64,/', $foto_data, $type)) {
             <i class="fas fa-user"></i>Jumlah Peserta
           </label>
           <input type="number" id="jumlah_peserta" name="jumlah_peserta" >
-</div>
+        </div>
 
-      <div class="form-row">
         <!-- Waktu -->
         <div class="form-group" style="--delay: 7">
-          <label for="waktu_kunjungan">
+          <label for="waktu">
             <i class="fas fa-clock"></i>Waktu Kunjungan
           </label>
-          <input type="time" id="waktu_kunjungan" name="waktu_kunjungan" required>
+          <input type="time" id="waktu" name="waktu" required>
         </div>
 
         <!-- Tanggal -->
         <div class="form-group" style="--delay: 8">
-          <label for="tanggal_kunjungan">
+          <label for="tanggal">
             <i class="fas fa-calendar"></i>Tanggal Kunjungan
           </label>
-          <input type="date" id="tanggal_kunjungan" name="tanggal_kunjungan" required>
+          <input type="date" id="tanggal" name="tanggal" required>
         </div>
       </div>
 
