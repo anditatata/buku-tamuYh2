@@ -24,9 +24,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $img = str_replace(' ', '+', $img);
         $imgData = base64_decode($img);
 
-        $foto_path = "/admin/storage/app/public/tamu_umum/" . uniqid() . ".png";
-        if (!is_dir("uploads")) mkdir("uploads");
-        file_put_contents($foto_path, $imgData);
+        $folder = __DIR__ . "/../admin/storage/app/public/tamu_umum/";
+        if (!is_dir($folder)) mkdir($folder, 0777, true);
+        $filename = uniqid() . ".png";
+        file_put_contents($folder . $filename, $imgData);
+        $foto_path = "/admin/storage/app/public/tamu_umum/" . $filename;
     }
 
     // Insert ke tamu_umum

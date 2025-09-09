@@ -24,9 +24,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $img = str_replace(' ', '+', $img);
         $imgData = base64_decode($img);
 
-        $foto_path = "uploads/" . uniqid() . ".png";
-        if (!is_dir("uploads")) mkdir("uploads");
-        file_put_contents($foto_path, $imgData);
+        $folder = __DIR__ . "/../admin/storage/app/public/orangtua/";
+        if (!is_dir($folder)) mkdir($folder, 0777, true);
+        $filename = uniqid() . ".png";
+        file_put_contents($folder . $filename, $imgData);
+        $foto_path = "/admin/storage/app/public/orangtua/" . $filename;
     }
 
     // // Insert ke orangtua (dummy karena form kamu belum punya field anak/kelas/alamat)
@@ -71,7 +73,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
   <div class="container">
     <h2><i class="fas fa-clipboard-list"></i> FORM KUNJUNGAN ORANG TUA SISWA/I</h2>
     
-    <form action="/admin/tamu/store" method="POST" id="ortuForm">
+    <form action="" method="POST" id="ortuForm">
       <div class="form-row">
         <!-- Nama -->
         <div class="form-group" style="--delay: 1">
