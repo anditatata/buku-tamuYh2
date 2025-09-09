@@ -9,9 +9,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     // Ambil data dari form
     $nama      = $_POST['nama'] ?? '';
-    $identitas = $_POST['identitas'] ?? '';
-    $keperluan = $_POST['keperluan'] ?? '';
-    $kontak    = $_POST['kontak'] ?? '';
+    $nama_siswa = $_POST['nama_siswa'] ?? '';
+    $kelas = $_POST['kelas'] ?? '';
+    $alamat    = $_POST['alamat'] ?? '';
+    $keperluan  = $_POST['keperluan'] ?? '';
+    $kontak     = $_POST['kontak'] ?? '';
     $guru      = $_POST['guru'] ?? '';
     $waktu     = $_POST['waktu'] ?? '';
     $tanggal   = $_POST['tanggal'] ?? '';
@@ -24,16 +26,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $img = str_replace(' ', '+', $img);
         $imgData = base64_decode($img);
 
-        $folder = __DIR__ . "/../admin/storage/app/public/orangtua/";
-        if (!is_dir($folder)) mkdir($folder, 0777, true);
-        $filename = uniqid() . ".png";
-        file_put_contents($folder . $filename, $imgData);
-        $foto_path = "/admin/storage/app/public/orangtua/" . $filename;
+        $foto_path = "uploads/" . uniqid() . ".png";
+        if (!is_dir("uploads")) mkdir("uploads");
+        file_put_contents($foto_path, $imgData);
     }
 
     // // Insert ke orangtua (dummy karena form kamu belum punya field anak/kelas/alamat)
     $sql_ortu = "INSERT INTO orangtua (nama_orangtua, nama_siswa, kelas, alamat, kontak, guru_dituju, keperluan, waktu_kunjungan, tanggal, foto, created_at, updated_at)
-                 VALUES ('$nama', '', '-', '-', '$kontak', '$guru', '$keperluan', '$waktu', '$tanggal', '$foto_path', NOW(), NOW())";
+                 VALUES ('$nama', '-', '-', '-', '$kontak', '$guru', '$keperluan', '$waktu', '$tanggal', '$foto_path', NOW(), NOW())";
     $conn->query($sql_ortu);
 
     $conn->close();
@@ -73,7 +73,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
   <div class="container">
     <h2><i class="fas fa-clipboard-list"></i> FORM KUNJUNGAN ORANG TUA SISWA/I</h2>
     
-    <form action="" method="POST" id="ortuForm">
+    <form action="/admin/tamu/store" method="POST" id="ortuForm">
       <div class="form-row">
         <!-- Nama -->
         <div class="form-group" style="--delay: 1">
@@ -94,62 +94,55 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
       <label for="kelas">📘 Pilih Kelas</label>
 <select id="kelas" name="kelas" class="form-control">
-  <option value="">-- Pilih Kelas --</option>
+     <option value="">-- Pilih Kelas --</option>
 
-  <!-- RPL -->
-  <option value="RPL-10-1">RPL 10-1</option>
-  <option value="RPL-10-2">RPL 10-2</option>
-  <option value="RPL-11-1">RPL 11-1</option>
-  <option value="RPL-11-2">RPL 11-2</option>
-  <option value="RPL-12-1">RPL 12-1</option>
-  <option value="RPL-12-2">RPL 12-2</option>
-
-
-  <!-- TKJ -->
-  <option value="TKJ-10-1">TKJ 10-1</option>
-  <option value="TKJ-10-2">TKJ 10-2</option>
-  <option value="TKJ-10-3">TKJ 10-3</option>
-
-  <option value="TKJ-11-1">TKJ 11-1</option>
-  <option value="TKJ-11-2">TKJ 11-2</option>
-  <option value="TKJ-11-3">TKJ 11-3</option>
-
-  <option value="TKJ-12-1">TKJ 12-1</option>
-  <option value="TKJ-12-2">TKJ 12-2</option>
-  <option value="TKJ-12-3">TKJ 12-3</option>
-
-  <!-- KA -->
-  <option value="KA-10-1">KA 10-1</option>
-  <option value="KA-10-2">KA 10-2</option>
-  <option value="KA-10-3">KA 10-3</option>
-  <option value="KA-10-4">KA 10-4</option>
-  <option value="KA-10-5">KA 10-5</option>
-  <option value="KA-10-6">KA 10-6</option>
-
-  <option value="KA-11-1">KA 11-1</option>
-  <option value="KA-11-2">KA 11-2</option>
-  <option value="KA-11-3">KA 11-3</option>
-  <option value="KA-11-4">KA 11-4</option>
-  <option value="KA-11-5">KA 11-5</option>
-  <option value="KA-11-6">KA 11-6</option>
-
-  <option value="KA-12-1">KA 12-1</option>
-  <option value="KA-12-2">KA 12-2</option>
-  <option value="KA-12-3">KA 12-3</option>
-  <option value="KA-12-4">KA 12-4</option>
-  <option value="KA-12-5">KA 12-5</option>
-  <option value="KA-12-6">KA 12-6</option>
-
-  <option value="KA-13-1">KA 13-1</option>
-  <option value="KA-13-2">KA 13-2</option>
-  <option value="KA-13-3">KA 13-3</option>
-  <option value="KA-13-4">KA 13-4</option>
-  <option value="KA-13-5">KA 13-5</option>
-  <option value="KA-13-6">KA 13-6</option>
-
+  <!-- kelas 10 -->
+  <option value="X RPL 1">X RPL 1 </option>
+  <option value="X RPL 2">X RPL 2</option>
+  <option value="X TKJ 1">X TKJ 1</option>
+  <option value="X TKJ 2">X TKJ 2</option>
+  <option value="X TKJ 3">X TKJ 3 </option>
+  <option value="X KA 1">X KA 1</option>
+  <option value="X KA 2">X KA 2</option>
+  <option value="X KA 3">X KA 3</option>
+  <option value="X KA 4">X KA 4</option>
+  <option value="X KA 5">X KA 5</option>
+  <option value="X KA 6">X KA 6</option>
   
-</select>
+  <!-- kelas 11 -->
+  <option value="XI RPL 1">XI RPL 1</option>
+  <option value="XI RPL 2">XI RPL 2</option>
+  <option value="XI TKJ 1">XI TKJ 2</option>
+  <option value="XI TKJ 2">XI TKJ 2</option>
+  <option value="XI TKJ 2">XI TKJ 3</option>
+  <option value="XI KA 1">XI KA 1</option>
+  <option value="XI KA 2">XI KA 2</option>
+  <option value="XI KA 3">XI KA 3</option>
+  <option value="XI KA 4">XI KA 4</option>
+  <option value="XI KA 5">XI KA 5</option>
+  <option value="XI KA 6">XI KA 6</option>
 
+ <!-- kelas 12 -->
+  <option value="XII RPL 1">XII RPL 1</option>
+  <option value="XII RPL 2">XII RPL 2</option>
+  <option value="XII TKJ 1">XII TKJ 1</option>
+  <option value="XII TKJ 2">XII TKJ 2</option>
+  <option value="XII TKJ 3">XII TKJ 3</option>
+  <option value="XII KA 1">XII KA 1</option>
+  <option value="XII KA 2">XII KA 2</option>
+  <option value="XII KA 3">XII KA 3</option>
+  <option value="XII KA 4">XII KA 4</option>
+  <option value="XII KA 5">XII KA 5</option>
+  <option value="XII KA 6">XII KA 6</option>
+ 
+  <!-- kelas 13 -->
+  <option value="XIII KA 1">XIII KA 1</option>
+  <option value="XIII KA 2">XIII KA 2</option>
+  <option value="XIII KA 3">XIII KA 3</option>
+  <option value="XIII KA 4">XIII KA 4</option>
+  <option value="XIII KA 5">XIII KA 5</option>
+  <option value="XIII KA 6">XIII KA 6</option>
+    </select>
 
       
 
@@ -285,7 +278,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             <option value="Ujang Suhara, S.Pd">Ujang Suhara, S.Pd</option>
             <option value="Uli Solihat Kamaluddin, S.Si, Gr">Uli Solihat Kamaluddin, S.Si, Gr</option>
             <option value="Wanto Kurniawan">Wanto Kurniawan</option>
-            <option value="Windawati Aisah, S.Si, S.Pd">Windawati Aisah, S.Si, S.Pd</option>
+          
             <option value="Windy Novia Anggraeni, S.Si">Windy Novia Anggraeni, S.Si</option>
             <option value="Yeni Meilina, S.Pd">Yeni Meilina, S.Pd</option>
             <option value="Zaka Faishal Hadiyan S, Kom">Zaka Faishal Hadiyan S, Kom</option>
@@ -359,7 +352,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
   <footer>
     <p><i class="fas fa-school"></i> <strong>SMKN 13 BANDUNG</strong></p>
     <p>Menjadi sekolah kejuruan yang menghasilkan tamatan kompeten dan berkarakter</p>
-    <p style="margin-top: 10px; font-size: 12px;">Dibuat Oleh Curif | Menggunakan HTML, CSS dan JavaScript</p>
+    <p style="margin-top: 10px; font-size: 12px;">Dibuat Oleh Curi | Menggunakan HTML, CSS dan JavaScript</p>
   </footer>
 
   <script src="js/script.js"></script>

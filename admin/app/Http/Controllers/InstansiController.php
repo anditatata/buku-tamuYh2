@@ -59,31 +59,34 @@ class InstansiController extends Controller
         return view('instansi.create');
     }
 
-    public function store(Request $request)
-    {
-        $request->validate([
-            'nama' => 'required|string|max:255',
-            'instansi_asal' => 'required|string|max:255',
-            'keperluan' => 'required|string',
-            'kontak' => 'nullable|string|max:20',
-            'guru_dituju' => 'required|string|max:255',
-            'jumlah_peserta' => 'required|integer|min:1',
-            'waktu_kunjungan' => 'required|date_format:H:i',
-            'tanggal_kunjungan' => 'required|date',
-            'foto' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
-        ]);
+   public function store(Request $request)
+{
+    $request->validate([
+        'nama'           => 'required|string|max:255',
+        'instansi_asal'  => 'required|string|max:255',
+        'keperluan'      => 'required|string',
+        'kontak'         => 'nullable|string|max:20',
+        'guru_dituju'    => 'required|string|max:255',
+        'jumlah_peserta' => 'required|integer|min:1',
+        'foto'           => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+    ]);
 
-        $data = $request->all();
+    $data = $request->all();
 
-        if ($request->hasFile('foto')) {
-            $fotoPath = $request->file('foto')->store('instansi', 'public');
-            $data['foto'] = $fotoPath;
-        }
+    // ⏰ Auto isi tanggal & waktu kunjungan dari sistem
+    $data['tanggal_kunjungan'] = now()->toDateString();   // contoh: 2025-09-08
+    $data['waktu_kunjungan']   = now()->toTimeString();   // contoh: 16:15:42
 
-        Instansi::create($data);
-
-        return redirect()->route('instansi.index')->with('success', 'Data instansi berhasil ditambahkan!');
+    if ($request->hasFile('foto')) {
+        $fotoPath = $request->file('foto')->store('instansi', 'public');
+        $data['foto'] = $fotoPath;
     }
+
+    Instansi::create($data);
+
+    return redirect()->route('instansi.index')->with('success', 'Data instansi berhasil ditambahkan!');
+}
+
 
     public function edit(Instansi $instansi)
     {

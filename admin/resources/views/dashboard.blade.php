@@ -139,25 +139,14 @@
         </div>
     </div>
 
-    <!-- Charts dan Tabel -->
-    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <!-- Line Chart Kunjungan Per Bulan -->
-        <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-100">
-            <h3 class="text-lg font-semibold text-gray-900 mb-4">Kunjungan 6 Bulan Terakhir</h3>
-            <div class="chart-container">
-                <canvas id="lineChart"></canvas>
-            </div>
-        </div>
+  
 
         <!-- Daftar Tamu Terbaru -->
         <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-100">
             <div class="flex items-center justify-between mb-4">
-                <h3 class="text-lg font-semibold text-gray-900">Daftar Tamu</h3>
-                <a href="{{ route('tamu_umum.index') }}" class="text-purple-600 hover:text-purple-700 font-medium text-sm flex items-center">
-                    Lihat Semua
-                    <svg class="w-4 h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
-                    </svg>
+                <h3 class="text-lg font-semibold text-gray-900">Daftar Tamu Terbaru</h3>
+               
+                    
                 </a>
             </div>
             <div class="overflow-x-auto">
@@ -181,7 +170,7 @@
                                             @else umum-bg
                                             @endif
                                         ">
-                                            {{ strtoupper(substr($guest->nama, 0, 1)) }}
+                                           
                                         </div>
                                         <span class="font-medium text-gray-900">{{ $guest->nama }}</span>
                                     </div>
